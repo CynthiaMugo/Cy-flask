@@ -15,5 +15,8 @@ def create_app():
     # Day 2 addition
     # register blueprint
     app.register_blueprint(student_bp)
+    # Day 3
+    # Can also have the url_prefix here
+    # app.register_blueprint(student_bp,url_prefix="/student")
 
     return app
