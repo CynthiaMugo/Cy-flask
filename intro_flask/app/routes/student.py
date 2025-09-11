@@ -27,10 +27,17 @@ def single_student():
     print("Single student")
     return "Single student"
 
-@student_bp.route("/add",methods=["POST"])
-def add_user():
+@student_bp.route("/add/json",methods=["POST"])
+def add_user_json():
     print("Add user was hit")
-    return "Adding a student"
+    data=request.get_json()
+    print("Received Data", data)
+    return "Adding a student json",200
+
+@student_bp.route("/add/form",methods=["POST"])
+def add_user_form():
+    print("Add user was hit")
+    return "Adding a student with form",200
 
 @student_bp.route("/edit",methods=["PUT"])
 def edit_user():
