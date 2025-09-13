@@ -1,4 +1,4 @@
-from flask import Blueprint,jsonify,request
+from flask import Blueprint,jsonify,request,send_from_directory
 from app.models import Student
 from app.db import db
 import re
@@ -107,7 +107,7 @@ def add_student_form():
 @student_bp.route("/picture",methods=["POST"])
 def add_student_picture():
     ALLOWED_EXTENSIONS={"png","jpg","jpeg"}
-    os.makedirs(UPLOAD_FOLDER, exists_ok=True)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
     if "pic" not in request.files:
         return jsonify({"error":"No file"}),400
@@ -115,7 +115,28 @@ def add_student_picture():
     if file.filename =="":
         return jsonify({"error":"No file selected"}),400
     filename=file.filename
-    ext=filename.rsplit(".",1)
+    ext=filename.rsplit(".",1)[1].lower()
+
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"error":"Invalid file type"}),400
+    
+    filepath=os.path.join(UPLOAD_FOLDER,filename)
+    file.save(filepath)
+
+    return jsonify({
+        "message":"File uploaded succefully",
+        "filename":filename,
+        "path":filepath
+    }),201
+
+#dynamic route :REACT<>
+#---file serving --
+@student_bp.route("/picture/<filename>",methods=["GET"])
+def serve_file(filename):
+    cwd=os.path.dirname(__file__)
+    uploads=os.path.join(cwd,"../../uploads")
+    return send_from_directory(uploads,filename)
+
 @student_bp.route("/edit",methods=["PUT"])
 def edit_user():
     print("User was edited")
