@@ -1,9 +1,25 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
+import Login from './Screens/Login';
+import AddStudent from './Screens/Dashboard/Add';
+import MainDash from './Screens/Dashboard';
+import StudentAnalytics from './Screens/Dashboard/Analytics';
+import ListStudent from './Screens/Dashboard/StudentList';
+
+
+
+function APP() {
     return <BrowserRouter>
         <Routes>
-            <Route path="/" element={<div className="bg-red-500 text-white p-4">Hello World</div>} />
-        </Routes>
+        <Route path="" element={<Login />}></Route>
+        {/* Nested */}
+        <Route path="/student" element={<MainDash />}>
+          <Route path="" element={<StudentAnalytics />} />
+          <Route path="add" element={<AddStudent />} />
+          <Route path="list" element={<ListStudent />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
 }
+
+export default APP;
