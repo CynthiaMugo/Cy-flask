@@ -28,10 +28,18 @@ UPLOAD_FOLDER="uploads"
 # """
 
 # routes and controller logic
-@student_bp.route("/",methods=["GET"])
-def single_student():
-    print("Single student")
-    return "Single student"
+@student_bp.route("/single/<int:id>",methods=["GET"])
+def single_student(id):
+    # student = Student.query.filter_by(id=id).first()
+    student = Student.query.get(id)
+    if not student:
+        return jsonify({"error": f"Student with id {id} does not exist"}), 404
+    return jsonify({
+        "id": student.id,
+        "name": student.name,
+        "email": student.email,
+        "created_at": student.created_at
+    })
 
 @student_bp.route("/add/json",methods=["POST"])
 def add_student_json():
@@ -137,10 +145,25 @@ def serve_file(filename):
     uploads=os.path.join(cwd,"../../uploads")
     return send_from_directory(uploads,filename)
 
-@student_bp.route("/edit",methods=["PUT"])
-def edit_user():
+@student_bp.route("/edit/<int:id>",methods=["PUT"])
+def edit_user(id):
+    student = Student.query.get(id)
+    if not student:
+        return jsonify({"error": f"Student with id {id} does not exist"}), 404
+    data = request.get_json()
+    if "name" in data:
+        student.name = data["name"]
+    db.session.commit()
+    return jsonify({
+        "message": "Student updated",
+        "student": {
+            "id": student.id,
+            "name": student.name,
+            "email": student.email,
+            "created_at": student.created_at
+        }
+    }), 200
     print("User was edited")
-    return "Editing a student"
 
 @student_bp.route("/list",methods=["GET"])
 def list_users():
@@ -148,7 +171,28 @@ def list_users():
     # users=[{"name":"Maggie"}, {"name":"Cynthia"}]
     # return jsonify(users)
     students = Student.query.all()
-    students_list = [{"id": s.id, "name": s.name, "email": s.email, "created_at": s.created_at} for s in students]
-    return jsonify(students_list), 200
+    print(students)
+    student_list = []
 
-    return "List ALL students FROM"
+    for student in students:
+        student_list.append({
+            "id": student.id,
+            "name": student.name,
+            "email": student.email,
+            "created_at": student.created_at
+        })
+    return jsonify({
+        "students": student_list,
+        "count": len(student_list)
+    }), 200
+
+@student_bp.route("/delete/<int:id>",methods=["DELETE"])
+def delete_student(id):
+    student = Student.query.get(id)
+    if not student:
+        return jsonify({"error": f"Student id {id} does not exist"}), 404
+    db.session.delete(student)
+    db.session.commit()
+    return jsonify({"message": f"Student id {id} deleted"}), 200
+
+    
