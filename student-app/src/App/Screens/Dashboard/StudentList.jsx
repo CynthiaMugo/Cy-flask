@@ -1,13 +1,38 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 function ListStudent() {
   const dumyData = [
     { id: 1, name: "sam", email: "sam@sam.com" },
     { id: 2, name: "john", email: "john@john.com" },
     { id: 3, name: "cain", email: "cain@john.com" },
   ];
+  const [students, setStudents] = useState([]);
+  const [isLoading, setIsLoading] = useState("");
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios({ method: "GET", url: "http://127.0.0.1:5000/student/list" })
+      .then((res) => {
+        console.log(res);
+        let newStudents = res?.data?.students;
+        console.log(newStudents);
+        setStudents(newStudents);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
     <div className=" h-full w-full flex items-center justify-between">
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+        <span className=" animate-pulse  text-violet-600 font-semibold">
+          {isLoading ? "Loading ..." : ""}
+        </span>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -20,10 +45,13 @@ function ListStudent() {
               <th scope="col" className="px-6 py-3">
                 Email
               </th>
+              <th scope="col" className="px-6 py-3">
+                Created At
+              </th>
             </tr>
           </thead>
           <tbody>
-            {dumyData.map((item, index) => {
+            {students.map((item, index) => {
               return (
                 <tr
                   className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
@@ -32,6 +60,7 @@ function ListStudent() {
                   <td class="px-6 py-4">{item.id}</td>
                   <td class="px-6 py-4">{item.name}</td>
                   <td class="px-6 py-4">{item.email}</td>
+                  <td class="px-6 py-4">{item.created_at}</td>
                 </tr>
               );
             })}
