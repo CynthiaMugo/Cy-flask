@@ -1,3 +1,6 @@
+import React from 'react';
+import axios from 'axios';
+
 function AddStudent() {
   return (
     <div className=" h-full w-full flex justify-center items-center">
