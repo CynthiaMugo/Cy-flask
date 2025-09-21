@@ -13,6 +13,8 @@ def create_app():
     # initialize db
     db.init_app(app)
     migrate.init_app(app,db)
+    bcrypt.init_app(app)
+    
 
     # Day 2 addition
     # register blueprint

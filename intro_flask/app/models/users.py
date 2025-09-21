@@ -12,3 +12,6 @@ class User(db.Model):
     email=db.Column(db.String(500), nullable=False)
     password=db.Column(db.Text, nullable=False)
     created_at=db.Column(db.DateTime(timezone=True),default=utc_now,nullable=False)
+
+    # relationships
+    # trach which user created which student

@@ -11,3 +11,8 @@ class Student(db.Model):
     name=db.Column(db.String(100),nullable=False)
     email=db.Column(db.String(500), nullable=False)
     created_at=db.Column(db.DateTime(timezone=True),default=utc_now,nullable=False)
+
+    creacted_by_user=db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
+    # jwt
+    # pipenv install flask-jwt-extended

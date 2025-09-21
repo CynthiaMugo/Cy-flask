@@ -48,3 +48,25 @@ def add_user():
             "created_at": new_user.created_at
         }   
     }),201
+
+@user_bp.route("/login", methods=["POST"])
+def login_user():
+    data=request.get_json()
+
+    email=data.get("email")
+    password=data.get("password")
+
+    if not email or not password:
+        return jsonify({"error":"Email and password are required"}),400
+
+    user=User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error":"User not found"}),401
+    
+    check_password=bcrypt.check_password_hash(user.password,password)
+    if not check_password:
+        return jsonify({"error":"Invalid password"}),401
+
+    return jsonify({
+        "message":"Login successful",
+    }),200
